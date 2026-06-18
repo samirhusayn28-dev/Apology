@@ -2,13 +2,24 @@
 <html lang="ur">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#f8bbd9">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Naraz Ho??</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    width: 100%;
+    overflow-x: hidden;
+  }
 
   body {
+    /* 100vh ki jagah 100dvh use kiya — iOS Safari mein address bar ke saath properly kaam karta hai */
     min-height: 100vh;
+    min-height: 100dvh;
     background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 30%, #e1bee7 60%, #fce4ec 100%);
     display: flex;
     align-items: center;
@@ -16,96 +27,87 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     overflow: hidden;
     transition: opacity 0.8s ease;
+    /* Safe area — notch wale phones ke liye */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
 
   body.fading { opacity: 0; }
 
   .container {
     text-align: center;
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1rem;
     max-width: 500px;
-    width: 90%;
+    width: 100%;
   }
 
   h1 {
-    font-size: clamp(2.2rem, 9vw, 4rem);
+    font-size: clamp(2rem, 10vw, 4rem);
     color: #b5125a;
     font-weight: 900;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     margin-bottom: 0.5rem;
     line-height: 1.1;
-  }
-
-  .subtitle {
-    font-size: clamp(0.9rem, 3vw, 1.05rem);
-    color: #c2185b;
-    opacity: 0.75;
-    margin-bottom: 3rem;
-    font-style: italic;
+    word-break: break-word;
   }
 
   .buttons-row {
     display: flex;
-    gap: 1.2rem;
+    gap: 0.8rem;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
     min-height: 80px;
+    margin-top: 2rem;
+    padding: 0 0.5rem;
   }
 
   .btn-angry {
     position: fixed;
     z-index: 999;
-    padding: 0.75rem 1.6rem;
+    padding: 0.7rem 1.3rem;
     border-radius: 14px;
-    border: none;
-    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+    border: 2px solid #ffcdd2;
+    font-size: clamp(0.8rem, 3.5vw, 0.95rem);
     font-weight: 700;
     cursor: pointer;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
     white-space: nowrap;
     background: #fff;
     color: #d32f2f;
-    border: 2px solid #ffcdd2;
     box-shadow: 0 2px 0px #ffcdd2, 0 4px 16px rgba(211,47,47,0.12);
-    transition: box-shadow 0.15s;
-  }
-
-  .btn-angry:hover {
-    box-shadow: 0 2px 0px #ef9a9a, 0 6px 20px rgba(211,47,47,0.18);
+    transition: transform 0.15s ease;
+    /* Mobile pe touch smooth ho */
+    touch-action: manipulation;
+    max-width: calc(100vw - 40px);
   }
 
   .btn-happy {
-    padding: 0.75rem 1.6rem;
+    padding: 0.7rem 1.3rem;
     border-radius: 14px;
     border: 2px solid #f48fb1;
-    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+    font-size: clamp(0.8rem, 3.5vw, 0.95rem);
     font-weight: 700;
     cursor: pointer;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
     white-space: nowrap;
     background: #fff;
     color: #c2185b;
     box-shadow: 0 2px 0px #f48fb1, 0 4px 16px rgba(194,24,91,0.12);
     transition: all 0.2s ease;
-  }
-
-  .btn-happy:hover {
-    background: #fce4ec;
-    box-shadow: 0 2px 0px #ec407a, 0 6px 20px rgba(194,24,91,0.2);
-    transform: translateY(-2px);
+    touch-action: manipulation;
+    max-width: calc(100vw - 40px);
   }
 
   .btn-happy:active {
     transform: translateY(1px);
-    box-shadow: 0 1px 0px #ec407a, 0 2px 8px rgba(194,24,91,0.15);
+    background: #fce4ec;
   }
 
   .overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0,0,0,0.5);
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -117,12 +119,14 @@
   .popup {
     background: white;
     border-radius: 24px;
-    padding: 2.5rem 2rem;
+    padding: 2rem 1.5rem;
     max-width: 360px;
     width: 100%;
     text-align: center;
     box-shadow: 0 24px 60px rgba(194,24,91,0.2);
     animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
   @keyframes popIn {
@@ -131,9 +135,9 @@
   }
 
   .popup-cat {
-    font-size: 3.5rem;
+    font-size: 3rem;
     display: block;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.5rem;
     animation: catBounce 1.2s ease-in-out infinite;
   }
 
@@ -143,7 +147,7 @@
   }
 
   .popup h2 {
-    font-size: clamp(1.05rem, 4vw, 1.3rem);
+    font-size: clamp(1rem, 4.5vw, 1.3rem);
     color: #b5125a;
     font-weight: 800;
     margin-bottom: 0.5rem;
@@ -151,16 +155,16 @@
   }
 
   .popup p {
-    font-size: clamp(0.82rem, 3vw, 0.92rem);
+    font-size: clamp(0.82rem, 3.5vw, 0.92rem);
     color: #999;
-    margin-bottom: 1.8rem;
+    margin-bottom: 1.5rem;
     line-height: 1.6;
   }
 
   .btn-okay {
     background: #fff;
     color: #c2185b;
-    padding: 0.65rem 2.4rem;
+    padding: 0.6rem 2rem;
     border-radius: 12px;
     border: 2px solid #f48fb1;
     font-size: 0.95rem;
@@ -168,18 +172,12 @@
     cursor: pointer;
     box-shadow: 0 2px 0px #f48fb1;
     transition: all 0.15s ease;
-    letter-spacing: 0.4px;
-  }
-
-  .btn-okay:hover {
-    background: #fce4ec;
-    box-shadow: 0 2px 0px #ec407a, 0 4px 14px rgba(194,24,91,0.15);
-    transform: translateY(-1px);
+    touch-action: manipulation;
   }
 
   .btn-okay:active {
     transform: translateY(1px);
-    box-shadow: 0 1px 0px #ec407a;
+    background: #fce4ec;
   }
 
   .btn-okay:disabled {
@@ -187,7 +185,6 @@
     cursor: not-allowed;
   }
 
-  /* Closing message */
   .closing-msg {
     position: fixed;
     inset: 0;
@@ -196,7 +193,7 @@
     justify-content: center;
     z-index: 2000;
     color: #b5125a;
-    font-size: clamp(1.2rem, 5vw, 1.6rem);
+    font-size: clamp(1.1rem, 5vw, 1.5rem);
     font-weight: 700;
     text-align: center;
     padding: 1rem;
@@ -207,9 +204,10 @@
 
   .closing-msg span {
     background: rgba(255,255,255,0.95);
-    padding: 1.2rem 2rem;
+    padding: 1.2rem 1.8rem;
     border-radius: 20px;
     box-shadow: 0 12px 40px rgba(194,24,91,0.2);
+    max-width: 90vw;
   }
 
   @keyframes fadeIn {
@@ -217,9 +215,19 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  /* Chhoti screens ke liye extra adjustments */
   @media (max-width: 400px) {
-    .buttons-row { gap: 0.8rem; }
-    .popup { padding: 2rem 1.2rem; }
+    .container { padding: 1rem 0.75rem; }
+    .buttons-row { gap: 0.6rem; margin-top: 1.5rem; }
+    .popup { padding: 1.5rem 1rem; border-radius: 20px; }
+    .popup-cat { font-size: 2.5rem; }
+  }
+
+  /* Landscape mode fix */
+  @media (max-height: 500px) and (orientation: landscape) {
+    body { align-items: flex-start; padding-top: 1rem; }
+    .popup { max-height: 95vh; padding: 1rem; }
+    .popup-cat { font-size: 2rem; margin-bottom: 0.3rem; }
   }
 </style>
 </head>
@@ -227,7 +235,6 @@
 
 <div class="container">
   <h1>NARAZ HO??</h1>
-
   <div class="buttons-row">
     <button class="btn-angry" id="angryBtn">😤 Hoon Naraz Abhi Bhi</button>
     <button class="btn-happy" onclick="showPopup()">😊 Nhi Hoon Naraz Ab Mai</button>
@@ -244,7 +251,7 @@
 </div>
 
 <div class="closing-msg" id="closingMsg">
-  <span>Byeeee Billiyon ki Rani 🌸<br>Website band ho rahi hai...</span>
+  <span>Alvida Billiyon ki Rani 🌸<br>Website band ho rahi hai...</span>
 </div>
 
 <script>
@@ -259,11 +266,18 @@
   }
 
   function placeAway(mouseX, mouseY) {
-    const margin = 20;
+    const margin = 15;
     const bw = btn.offsetWidth  || 180;
     const bh = btn.offsetHeight || 50;
     const maxX = window.innerWidth  - bw - margin;
     const maxY = window.innerHeight - bh - margin;
+
+    // Agar screen itni chhoti ho ke button fit hi na ho
+    if (maxX < margin || maxY < margin) {
+      btn.style.left = margin + 'px';
+      btn.style.top  = margin + 'px';
+      return;
+    }
 
     const cx = parseFloat(btn.style.left) + bw / 2;
     const cy = parseFloat(btn.style.top)  + bh / 2;
@@ -273,13 +287,15 @@
     const dist = Math.sqrt(dx * dx + dy * dy) || 1;
     dx /= dist; dy /= dist;
 
-    const flee = 300;
+    // Mobile pe kam door bhage, desktop pe zyada
+    const flee = Math.min(250, Math.min(window.innerWidth, window.innerHeight) * 0.4);
     let nx = cx + dx * flee - bw / 2;
     let ny = cy + dy * flee - bh / 2;
 
+    // Agar bounds se bahar ja raha hai to random jagah
     if (nx < margin || nx > maxX || ny < margin || ny > maxY) {
-      nx = margin + Math.random() * maxX;
-      ny = margin + Math.random() * maxY;
+      nx = margin + Math.random() * (maxX - margin);
+      ny = margin + Math.random() * (maxY - margin);
     }
 
     nx = Math.max(margin, Math.min(maxX, nx));
@@ -289,6 +305,7 @@
     btn.style.top  = ny + 'px';
   }
 
+  // Mouse support (desktop)
   document.addEventListener('mousemove', function(e) {
     if (!placed) initBtn();
     const r = btn.getBoundingClientRect();
@@ -296,9 +313,10 @@
     const cy = r.top  + r.height / 2;
     const dx = e.clientX - cx;
     const dy = e.clientY - cy;
-    if (Math.sqrt(dx*dx + dy*dy) < 180) placeAway(e.clientX, e.clientY);
+    if (Math.sqrt(dx*dx + dy*dy) < 150) placeAway(e.clientX, e.clientY);
   });
 
+  // Touch support (mobile) — improved
   btn.addEventListener('touchstart', function(e) {
     e.preventDefault();
     if (!placed) initBtn();
@@ -306,9 +324,27 @@
     placeAway(t.clientX, t.clientY);
   }, { passive: false });
 
+  // Fallback click
   btn.addEventListener('click', function(e) {
     if (!placed) initBtn();
-    placeAway(e.clientX, e.clientY);
+    placeAway(e.clientX || window.innerWidth / 2, e.clientY || window.innerHeight / 2);
+  });
+
+  // Resize pe button ko wapas bounds mein lao
+  window.addEventListener('resize', function() {
+    if (placed) {
+      const margin = 15;
+      const bw = btn.offsetWidth;
+      const bh = btn.offsetHeight;
+      const maxX = window.innerWidth  - bw - margin;
+      const maxY = window.innerHeight - bh - margin;
+      let x = parseFloat(btn.style.left);
+      let y = parseFloat(btn.style.top);
+      x = Math.max(margin, Math.min(maxX, x));
+      y = Math.max(margin, Math.min(maxY, y));
+      btn.style.left = x + 'px';
+      btn.style.top  = y + 'px';
+    }
   });
 
   function showPopup() {
@@ -316,27 +352,19 @@
   }
 
   function closePopup() {
-    // Popup band karo aur okay button disable kar do taake double click na ho
     document.getElementById('overlay').classList.remove('active');
     document.getElementById('okayBtn').disabled = true;
-
-    // Closing message dikhao
     document.getElementById('closingMsg').classList.add('active');
 
-    // 2 second baad website band karo
     setTimeout(function() {
-      // Fade out effect
       document.body.classList.add('fading');
 
       setTimeout(function() {
-        // Pehle window.close() try karo (agar page script se khula ho to kaam karega)
         try {
           window.open('', '_self');
           window.close();
         } catch(e) {}
 
-        // Fallback: agar close na ho sake to blank page pe redirect
-        // aur uske baad bhi kuch na dikhe isliye page saaf kar do
         setTimeout(function() {
           document.body.innerHTML = '';
           document.title = '';
