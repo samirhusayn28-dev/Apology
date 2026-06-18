@@ -15,7 +15,10 @@
     justify-content: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     overflow: hidden;
+    transition: opacity 0.8s ease;
   }
+
+  body.fading { opacity: 0; }
 
   .container {
     text-align: center;
@@ -179,6 +182,41 @@
     box-shadow: 0 1px 0px #ec407a;
   }
 
+  .btn-okay:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Closing message */
+  .closing-msg {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    color: #b5125a;
+    font-size: clamp(1.2rem, 5vw, 1.6rem);
+    font-weight: 700;
+    text-align: center;
+    padding: 1rem;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .closing-msg.active { display: flex; }
+
+  .closing-msg span {
+    background: rgba(255,255,255,0.95);
+    padding: 1.2rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(194,24,91,0.2);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   @media (max-width: 400px) {
     .buttons-row { gap: 0.8rem; }
     .popup { padding: 2rem 1.2rem; }
@@ -189,7 +227,6 @@
 
 <div class="container">
   <h1>NARAZ HO??</h1>
-  
 
   <div class="buttons-row">
     <button class="btn-angry" id="angryBtn">😤 Hoon Naraz Abhi Bhi</button>
@@ -202,8 +239,12 @@
     <span class="popup-cat">🐱</span>
     <h2>Thank you so much Billiyon ki Rani</h2>
     <p>Aagy se esi galti nhi hogi<br>promise pakka! 🌸</p>
-    <button class="btn-okay" onclick="closePopup()">Okay</button>
+    <button class="btn-okay" id="okayBtn" onclick="closePopup()">Okay</button>
   </div>
+</div>
+
+<div class="closing-msg" id="closingMsg">
+  <span>Alvida Billiyon ki Rani 🌸<br>Website band ho rahi hai...</span>
 </div>
 
 <script>
@@ -270,8 +311,40 @@
     placeAway(e.clientX, e.clientY);
   });
 
-  function showPopup()  { document.getElementById('overlay').classList.add('active'); }
-  function closePopup() { document.getElementById('overlay').classList.remove('active'); }
+  function showPopup() {
+    document.getElementById('overlay').classList.add('active');
+  }
+
+  function closePopup() {
+    // Popup band karo aur okay button disable kar do taake double click na ho
+    document.getElementById('overlay').classList.remove('active');
+    document.getElementById('okayBtn').disabled = true;
+
+    // Closing message dikhao
+    document.getElementById('closingMsg').classList.add('active');
+
+    // 2 second baad website band karo
+    setTimeout(function() {
+      // Fade out effect
+      document.body.classList.add('fading');
+
+      setTimeout(function() {
+        // Pehle window.close() try karo (agar page script se khula ho to kaam karega)
+        try {
+          window.open('', '_self');
+          window.close();
+        } catch(e) {}
+
+        // Fallback: agar close na ho sake to blank page pe redirect
+        // aur uske baad bhi kuch na dikhe isliye page saaf kar do
+        setTimeout(function() {
+          document.body.innerHTML = '';
+          document.title = '';
+          try { window.location.replace('about:blank'); } catch(e) {}
+        }, 400);
+      }, 800);
+    }, 2000);
+  }
 </script>
 </body>
 </html>
