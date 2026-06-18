@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naraz Ho??</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 30%, #e1bee7 60%, #fce4ec 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+  }
+
+  .container {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    max-width: 500px;
+    width: 90%;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 9vw, 4rem);
+    color: #b5125a;
+    font-weight: 900;
+    letter-spacing: 3px;
+    margin-bottom: 0.5rem;
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    font-size: clamp(0.9rem, 3vw, 1.05rem);
+    color: #c2185b;
+    opacity: 0.75;
+    margin-bottom: 3rem;
+    font-style: italic;
+  }
+
+  .buttons-row {
+    display: flex;
+    gap: 1.2rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: 80px;
+  }
+
+  .btn-angry {
+    position: fixed;
+    z-index: 999;
+    padding: 0.75rem 1.6rem;
+    border-radius: 14px;
+    border: none;
+    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+    background: #fff;
+    color: #d32f2f;
+    border: 2px solid #ffcdd2;
+    box-shadow: 0 2px 0px #ffcdd2, 0 4px 16px rgba(211,47,47,0.12);
+    transition: box-shadow 0.15s;
+  }
+
+  .btn-angry:hover {
+    box-shadow: 0 2px 0px #ef9a9a, 0 6px 20px rgba(211,47,47,0.18);
+  }
+
+  .btn-happy {
+    padding: 0.75rem 1.6rem;
+    border-radius: 14px;
+    border: 2px solid #f48fb1;
+    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+    background: #fff;
+    color: #c2185b;
+    box-shadow: 0 2px 0px #f48fb1, 0 4px 16px rgba(194,24,91,0.12);
+    transition: all 0.2s ease;
+  }
+
+  .btn-happy:hover {
+    background: #fce4ec;
+    box-shadow: 0 2px 0px #ec407a, 0 6px 20px rgba(194,24,91,0.2);
+    transform: translateY(-2px);
+  }
+
+  .btn-happy:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0px #ec407a, 0 2px 8px rgba(194,24,91,0.15);
+  }
+
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .overlay.active { display: flex; }
+
+  .popup {
+    background: white;
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(194,24,91,0.2);
+    animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.6); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  .popup-cat {
+    font-size: 3.5rem;
+    display: block;
+    margin-bottom: 0.6rem;
+    animation: catBounce 1.2s ease-in-out infinite;
+  }
+
+  @keyframes catBounce {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50%       { transform: translateY(-8px) rotate(4deg); }
+  }
+
+  .popup h2 {
+    font-size: clamp(1.05rem, 4vw, 1.3rem);
+    color: #b5125a;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    line-height: 1.35;
+  }
+
+  .popup p {
+    font-size: clamp(0.82rem, 3vw, 0.92rem);
+    color: #999;
+    margin-bottom: 1.8rem;
+    line-height: 1.6;
+  }
+
+  .btn-okay {
+    background: #fff;
+    color: #c2185b;
+    padding: 0.65rem 2.4rem;
+    border-radius: 12px;
+    border: 2px solid #f48fb1;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 0px #f48fb1;
+    transition: all 0.15s ease;
+    letter-spacing: 0.4px;
+  }
+
+  .btn-okay:hover {
+    background: #fce4ec;
+    box-shadow: 0 2px 0px #ec407a, 0 4px 14px rgba(194,24,91,0.15);
+    transform: translateY(-1px);
+  }
+
+  .btn-okay:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0px #ec407a;
+  }
+
+  @media (max-width: 400px) {
+    .buttons-row { gap: 0.8rem; }
+    .popup { padding: 2rem 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>NARAZ HO??</h1>
+  
+
+  <div class="buttons-row">
+    <button class="btn-angry" id="angryBtn">😤 Hoon Naraz Abhi Bhi</button>
+    <button class="btn-happy" onclick="showPopup()">😊 Nhi Hoon Naraz Ab Mai</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <span class="popup-cat">🐱</span>
+    <h2>Thank you so much Billiyon ko Rani</h2>
+    <p>Aagy se esi galti nhi hogi<br>promise pakka! 🌸</p>
+    <button class="btn-okay" onclick="closePopup()">Okay</button>
+  </div>
+</div>
+
+<script>
+  const btn = document.getElementById('angryBtn');
+  let placed = false;
+
+  function initBtn() {
+    const r = btn.getBoundingClientRect();
+    btn.style.left = r.left + 'px';
+    btn.style.top  = r.top  + 'px';
+    placed = true;
+  }
+
+  function placeAway(mouseX, mouseY) {
+    const margin = 20;
+    const bw = btn.offsetWidth  || 180;
+    const bh = btn.offsetHeight || 50;
+    const maxX = window.innerWidth  - bw - margin;
+    const maxY = window.innerHeight - bh - margin;
+
+    const cx = parseFloat(btn.style.left) + bw / 2;
+    const cy = parseFloat(btn.style.top)  + bh / 2;
+
+    let dx = cx - mouseX;
+    let dy = cy - mouseY;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    dx /= dist; dy /= dist;
+
+    const flee = 300;
+    let nx = cx + dx * flee - bw / 2;
+    let ny = cy + dy * flee - bh / 2;
+
+    if (nx < margin || nx > maxX || ny < margin || ny > maxY) {
+      nx = margin + Math.random() * maxX;
+      ny = margin + Math.random() * maxY;
+    }
+
+    nx = Math.max(margin, Math.min(maxX, nx));
+    ny = Math.max(margin, Math.min(maxY, ny));
+
+    btn.style.left = nx + 'px';
+    btn.style.top  = ny + 'px';
+  }
+
+  document.addEventListener('mousemove', function(e) {
+    if (!placed) initBtn();
+    const r = btn.getBoundingClientRect();
+    const cx = r.left + r.width  / 2;
+    const cy = r.top  + r.height / 2;
+    const dx = e.clientX - cx;
+    const dy = e.clientY - cy;
+    if (Math.sqrt(dx*dx + dy*dy) < 180) placeAway(e.clientX, e.clientY);
+  });
+
+  btn.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    if (!placed) initBtn();
+    const t = e.touches[0];
+    placeAway(t.clientX, t.clientY);
+  }, { passive: false });
+
+  btn.addEventListener('click', function(e) {
+    if (!placed) initBtn();
+    placeAway(e.clientX, e.clientY);
+  });
+
+  function showPopup()  { document.getElementById('overlay').classList.add('active'); }
+  function closePopup() { document.getElementById('overlay').classList.remove('active'); }
+</script>
+</body>
+</html>
